@@ -73,12 +73,83 @@ Logic App
 - Function 내부에서 읽어들이는 과정
 - 이 부분은 Input Binding으로 처리해야 함.
 
+## Azure Function Lifecycle
+디자인은 모든 것을 코드로 작성됨.
+- check in/out push pull이 가능한다는
 
 
 
 
+Functions 동작 방식
+
+- Fucntions App은 여러 함수를 포함할 수 있다.
+- Functions App은 0 to many 인스턴스에서 구동된다.
+부하가 많이 걸리면 호스트 인스턴스를 늘려 사용하고, Dispose한다.
+
+
+Functions 프로그래밍 모델,
+- Functions은 반드시 "Do on thing"을 해야 한다.
+- Fucntions은 반드시 멱등적(idempotent)이어야 한다.
+- Fucntions은 반드시 가능한한 빨리 끝나야 한다.
+
+Azure Function Trigger
+(종류 다양 google에 Azure Trigger)
+
+run.csx
+
+## Platform & Scale
+
+Dedicated & dynamic
+App Service Plan
+
+- 실행 수에 따라 과금
+    - 실행 수 : 실행시간 * 사용 메모리
+
+Scale은 플랫폼(Azure)에서 과금
 
 
 
+## Azure 리소스 사전 준비
+0. Settings 
+ - Language : English
 
+1. Resource Group
+ - Name : **Az-Hol-Serverless**
+ - Location : Japan west
 
+2. App Service Plan
+ - Name : ServerlessHol-Dev 
+ - Location : Japan west 
+ - OS : Windows
+ - Pricing Tier : B1 basic
+
+3. Storage account
+ - Name : servelessstor5234
+ - Replication : LRS
+ - Location : japan west
+
+4. Emotion API (Preview)
+ - Name : EmotionApi-dev
+ - Location : West US
+ - Pricing Tier : F0
+
+5. Text Analytics API
+ - Name : TextAnalyApi-Dev
+ - Location : West US
+ - Pricing Tier : F0
+
+6. Function App
+ - Name : ServerlessFunc-5234
+ - Hosting Plan : App Service Plan
+ - App Service Plan / Location : Serverless-dev
+ - Storage : serverlessstor5234
+
+7. Storage Container 추가
+ - Blob : card-input, card-output, audio
+ - Queue : qtem
+
+8. 실습 사전준비 사항
+ - Copy Storage Account 연결 문자열 
+ - Copy EmotionAPI URL and Key 
+ - Copy TextAnalysis URL and Key
+ 

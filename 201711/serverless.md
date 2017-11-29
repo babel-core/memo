@@ -144,12 +144,188 @@ Scale은 플랫폼(Azure)에서 과금
  - App Service Plan / Location : Serverless-dev
  - Storage : serverlessstor5234
 
-7. Storage Container 추가
+## Azure Function Serverless HOL
+
+### 시나리오 #1. ServerlessFunc-5234 들어가기 
+
+```Csharp
+using System.Net;
+
+public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
+{
+    log.Info("C# HTTP trigger function processed a request.");
+
+    // parse query parameter
+    string name = req.GetQueryNameValuePairs()
+        .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
+        .Value;
+
+    // Get request body
+    dynamic data = await req.Content.ReadAsAsync<object>();
+
+    // Set name to query string or body data
+    name = name ?? data?.name;
+
+    return name == null
+        ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
+        : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+}
+```
+```Log
+2017-11-29T05:51:14.528 Function started (Id=93914579-5617-42ba-8be4-8b22db4a9b5c)
+2017-11-29T05:51:14.625 C# HTTP trigger function processed a request.
+2017-11-29T05:51:14.637 Function completed (Success, Id=93914579-5617-42ba-8be4-8b22db4a9b5c, Duration=108ms)
+```
+
+```Output
+Hello Azure
+```
+
+#### 인자로 ExecutionContext ctx 추가
+물리적인 정보를 추가적으로 알려줌 
+```Csharp
+public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log, ExecutionContext ctx)
+{
+    log.Info("C# HTTP trigger function processed a request.");
+    log.Info("현재 폴더 : " + ctx.FunctionDirectory);
+    // parse query parameter
+    string name = req.GetQueryNameValuePairs()
+        .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
+        .Value;
+
+    // Get request body
+    dynamic data = await req.Content.ReadAsAsync<object>();
+
+    // Set name to query string or body data
+    name = name ?? data?.name;
+
+    return name == null
+        ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
+        : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+}
+```
+
+```Log
+2017-11-29T05:50:08.262 Function started (Id=28bc2d77-ad0d-4513-b4a0-0816e83722f4)
+2017-11-29T05:50:08.262 C# HTTP trigger function processed a request.
+2017-11-29T05:50:08.262 현재 폴더 : D:\home\site\wwwroot\HttpCS
+2017-11-29T05:50:08.262 Function completed (Success, Id=28bc2d77-ad0d-4513-b4a0-0816e83722f4, Duration=0ms)
+```
+
+```Output
+Hello Azure
+```
+
+
+### 시나리오 #2. Azure Function CLI를 이용하여 개발하기
+
+[https://www.npmjs.com/package/azure-functions-cli](https://www.npmjs.com/package/azure-functions-cli)
+
+1. func init
+ - funtion 초기화 
+ - init
+
+2. func new
+
+```Bash
+$ func new
+Select a language: JavaScript
+Select a template: HttpTrigger
+Function name: [HttpTriggerJS]
+Writing d:\azfunctest\HttpTriggerJS\index.js
+Writing d:\azfunctest\HttpTriggerJS\sample.dat
+Writing d:\azfunctest\HttpTriggerJS\function.json
+```
+
+3. visual stdio code 실행
+```Bash
+$ code .
+```
+
+4. code에서 코드 수정
+
+index.js파일의 Line 7번째 라인 수정  
+
+```javascript
+body: "How are you doing " + (req.query.name || req.body.name)
+```
+
+5. host 시작
+
+```Bash
+$ func host start
+```
+
+6. vscode를 이용한 debug
+```Bash
+$ func host start --debug vscode
+```
+
+7. azure login 
+
+```Bash
+$ func azure login
+----
+```
+
+8. azure account
+
+```Bash
+$ func azure account list
+Subscription                                                           Current
+------------                                                           -------
+Visual Studio Enterprise ? MPN (28109cf6-d71e-4bf2-a455-8e5ba423d10c)  True
+```
+
+9. auzre account set    
+
+```Bash
+$ func azure account set 28109cf6-d71e-4bf2-a455-8e5ba423d10c
+Subscription                                                           Current
+------------                                                           -------
+Visual Studio Enterprise ? MPN (28109cf6-d71e-4bf2-a455-8e5ba423d10c)  True
+```
+
+10. install azure-functions-pack
+
+```Bash
+$ npm i -g azure-functions-pack
+[  ................] \ fetchMetadata: sill resolveWithNewModule browserify-rsa@4.0.1 checking installable status
+```
+
+11. publish on azure function (ServerlessFunc-5234)
+
+```Bash
+$ func azure functionapp publish ServerlessFunc-5234
+Publish d:\azfunctest contents to an Azure Function App. Locally deleted files are not removed from destination.
+Getting site publishing info...
+Creating archive for current directory...
+Uploading archive...
+Upload completed successfully.
+```
+
+
+
+
+### 시나리오 #3. Azure 이미지 프로세싱 (영웅 카드 만들기)
+
+
+#### 실습 사전 작업
+
+1. Storage Container 추가
  - Blob : card-input, card-output, audio
  - Queue : qtem
 
-8. 실습 사전준비 사항
+2. 실습 사전준비 사항
  - Copy Storage Account 연결 문자열 
  - Copy EmotionAPI URL and Key 
  - Copy TextAnalysis URL and Key
- 
+
+#### 실습 시나리오
+
+
+
+
+
+### 시나리오 #4. 
+

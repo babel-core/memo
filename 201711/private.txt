@@ -8,3 +8,5 @@ KEY : a3e291cc14da4bd2b2affd12ba6a92c9
 <Text Analysis API>
 URL : https://westus.api.cognitive.microsoft.com/text/analytics/v2.0
 KEY : 377dfc2f4b684015a2472f15d6645c02
+
+ServerlessFunc-5234
